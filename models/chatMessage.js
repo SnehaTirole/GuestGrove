@@ -1,21 +1,12 @@
-// models/ChatMessage.js
 const mongoose = require('mongoose');
 
-const chatSchema = new mongoose.Schema({
-    sender: {
-        type: String,
-        enum: ['user', 'admin'],
-        required: true
-    },
-    message: {
-        type: String,
-        required: true
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now
-    }
+const chatMessageSchema = new mongoose.Schema({
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+  sessionId: { type: String, required: true },
+  message: { type: String, required: true },
+  response: { type: String }, // ✅ remove "required: true" if it's optional
+  isBot: { type: Boolean, default: false },
+  timestamp: { type: Date, default: Date.now }
 });
 
-// Avoid OverwriteModelError
-module.exports = mongoose.models.ChatMessage || mongoose.model('ChatMessage', chatSchema);
+module.exports = mongoose.model('ChatMessage', chatMessageSchema);

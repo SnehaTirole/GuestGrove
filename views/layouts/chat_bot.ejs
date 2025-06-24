@@ -1,0 +1,459 @@
+<!-- Add this to your main layout EJS file (e.g., views/layouts/main.ejs) or any page where you want the chatbot -->
+
+<!-- Chatbot HTML Structure -->
+<div id="chatbot-container" class="chatbot-container">
+  <!-- Chat Toggle Button -->
+  <div id="chat-toggle" class="chat-toggle">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+    </svg>
+  </div>
+
+  <!-- Chat Window -->
+  <div id="chat-window" class="chat-window" style="display: none;">
+    <!-- Header -->
+    <div class="chat-header">
+      <div class="chat-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <circle cx="12" cy="5" r="2"></circle>
+          <path d="M12 7v4"></path>
+        </svg>
+        <span>GuestGrove Assistant</span>
+      </div>
+      <div class="chat-controls">
+        <button id="clear-chat" class="control-btn" title="Clear chat">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3,6 5,6 21,6"></polyline>
+            <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2v2"></path>
+          </svg>
+        </button>
+        <button id="close-chat" class="control-btn" title="Close chat">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Messages -->
+    <div id="chat-messages" class="chat-messages">
+      <!-- Messages will be dynamically added here -->
+    </div>
+
+    <!-- Typing Indicator -->
+    <div id="typing-indicator" class="typing-indicator" style="display: none;">
+      <div class="typing-dots">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div class="chat-input">
+      <input type="text" id="message-input" placeholder="Type your message..." />
+      <button id="send-btn" class="send-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22,2 15,22 11,13 2,9 22,2"></polygon>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Chatbot CSS -->
+<style>
+.chatbot-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.chat-toggle {
+  width: 60px;
+  height: 60px;
+  background: #3b82f6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  color: white;
+}
+
+.chat-toggle:hover {
+  background: #2563eb;
+  transform: scale(1.1);
+}
+
+.chat-window {
+  width: 350px;
+  height: 500px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  border: 1px solid #e5e7eb;
+}
+
+.chat-header {
+  background: #3b82f6;
+  color: white;
+  padding: 16px;
+  border-radius: 12px 12px 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chat-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.chat-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.control-btn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.control-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.message {
+  max-width: 80%;
+  padding: 10px 14px;
+  border-radius: 18px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.message.bot {
+  background: #f3f4f6;
+  color: #374151;
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+
+.message.user {
+  background: #3b82f6;
+  color: white;
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+}
+
+.message-time {
+  font-size: 11px;
+  opacity: 0.7;
+  margin-top: 4px;
+}
+
+.typing-indicator {
+  padding: 10px 16px;
+}
+
+.typing-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.typing-dots span {
+  width: 8px;
+  height: 8px;
+  background: #9ca3af;
+  border-radius: 50%;
+  animation: typing 1.4s infinite ease-in-out;
+}
+
+.typing-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typing {
+  0%, 60%, 100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-10px);
+  }
+}
+
+.chat-input {
+  padding: 16px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  gap: 8px;
+}
+
+#message-input {
+  flex: 1;
+  border: 1px solid #d1d5db;
+  border-radius: 20px;
+  padding: 10px 16px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+#message-input:focus {
+  border-color: #3b82f6;
+}
+
+.send-btn {
+  width: 40px;
+  height: 40px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.send-btn:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.send-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+  .chat-window {
+    width: calc(100vw - 40px);
+    height: calc(100vh - 100px);
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+  }
+}
+</style>
+
+<!-- Chatbot JavaScript -->
+<script>
+class ChatBot {
+  constructor() {
+    this.sessionId = this.getOrCreateSessionId();
+    this.isOpen = false;
+    this.isTyping = false;
+    
+    this.initializeElements();
+    this.bindEvents();
+    this.loadChatHistory();
+  }
+
+  initializeElements() {
+    this.toggleBtn = document.getElementById('chat-toggle');
+    this.chatWindow = document.getElementById('chat-window');
+    this.closeBtn = document.getElementById('close-chat');
+    this.clearBtn = document.getElementById('clear-chat');
+    this.messagesContainer = document.getElementById('chat-messages');
+    this.messageInput = document.getElementById('message-input');
+    this.sendBtn = document.getElementById('send-btn');
+    this.typingIndicator = document.getElementById('typing-indicator');
+  }
+
+  bindEvents() {
+    this.toggleBtn.addEventListener('click', () => this.toggleChat());
+    this.closeBtn.addEventListener('click', () => this.closeChat());
+    this.clearBtn.addEventListener('click', () => this.clearChat());
+    this.sendBtn.addEventListener('click', () => this.sendMessage());
+    this.messageInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') this.sendMessage();
+    });
+  }
+
+  getOrCreateSessionId() {
+    let sessionId = localStorage.getItem('chatbot_session_id');
+    if (!sessionId) {
+      sessionId = 'session_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+      localStorage.setItem('chatbot_session_id', sessionId);
+    }
+    return sessionId;
+  }
+
+  toggleChat() {
+    if (this.isOpen) {
+      this.closeChat();
+    } else {
+      this.openChat();
+    }
+  }
+
+  openChat() {
+    this.isOpen = true;
+    this.chatWindow.style.display = 'flex';
+    this.toggleBtn.style.display = 'none';
+    this.messageInput.focus();
+  }
+
+  closeChat() {
+    this.isOpen = false;
+    this.chatWindow.style.display = 'none';
+    this.toggleBtn.style.display = 'flex';
+  }
+
+  async loadChatHistory() {
+    try {
+      const response = await fetch(`/chatbot/api/history/${this.sessionId}`);
+      const data = await response.json();
+      
+      if (data.success && data.messages.length > 0) {
+        data.messages.forEach(msg => {
+          this.addMessage(msg.message, msg.isBot, new Date(msg.timestamp));
+        });
+      } else {
+        this.addWelcomeMessage();
+      }
+    } catch (error) {
+      console.error('Error loading chat history:', error);
+      this.addWelcomeMessage();
+    }
+  }
+
+  addWelcomeMessage() {
+    this.addMessage("Hello! I'm your GuestGrove assistant. How can I help you today?", true);
+  }
+
+  async sendMessage() {
+    const message = this.messageInput.value.trim();
+    if (!message || this.isTyping) return;
+
+    // Add user message
+    this.addMessage(message, false);
+    this.messageInput.value = '';
+    this.showTypingIndicator();
+
+    try {
+      console.log('Sending message:', message); // Debug log
+      console.log('Session ID:', this.sessionId); // Debug log
+      
+      const response = await fetch('/chatbot/api/message', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: message,
+          sessionId: this.sessionId
+        })
+      });
+
+      console.log('Response status:', response.status); // Debug log
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Response data:', data); // Debug log
+
+      if (data.success) {
+        setTimeout(() => {
+          this.hideTypingIndicator();
+          this.addMessage(data.response, true, new Date(data.timestamp));
+        }, 1000);
+      } else {
+        throw new Error(data.message || 'Unknown error');
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      this.hideTypingIndicator();
+      this.addMessage("Sorry, I'm having trouble responding right now. Please try again later. Error: " + error.message, true);
+    }
+  }
+
+  addMessage(text, isBot, timestamp = new Date()) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${isBot ? 'bot' : 'user'}`;
+    
+    const timeString = timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    
+    messageDiv.innerHTML = `
+      <div>${text}</div>
+      <div class="message-time">${timeString}</div>
+    `;
+    
+    this.messagesContainer.appendChild(messageDiv);
+    this.scrollToBottom();
+  }
+
+  showTypingIndicator() {
+    this.isTyping = true;
+    this.typingIndicator.style.display = 'block';
+    this.sendBtn.disabled = true;
+    this.scrollToBottom();
+  }
+
+  hideTypingIndicator() {
+    this.isTyping = false;
+    this.typingIndicator.style.display = 'none';
+    this.sendBtn.disabled = false;
+  }
+
+  async clearChat() {
+    try {
+      await fetch(`/chatbot/api/history/${this.sessionId}`, {
+        method: 'DELETE'
+      });
+      
+      this.messagesContainer.innerHTML = '';
+      this.addWelcomeMessage();
+    } catch (error) {
+      console.error('Error clearing chat:', error);
+    }
+  }
+
+  scrollToBottom() {
+    setTimeout(() => {
+      this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+    }, 100);
+  }
+}
+
+// Initialize chatbot when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+  new ChatBot();
+});
+</script>

@@ -25,6 +25,7 @@ const passport=require("passport");
 const LocalStrategy=require("passport-local");
 
 const User=require("./models/user.js");
+const chatbotRoutes = require('./routes/chatbot');
 
 
 const sessionOptions={
@@ -40,7 +41,7 @@ const sessionOptions={
 // app.get("/",(req,res)=>{
 //     res.send("hii,i an root");
 // })
-
+app.use(express.json()); // Needed to parse JSON POST bodies
 app.set("view engine","ejs");
 app.set("views",path.join(__dirname,"views"));
 app.use(express.urlencoded({extended:true}));
@@ -93,6 +94,7 @@ app.use((req,res,next)=>{
 app.use("/listings",listingRouter);
 app.use("/listings/:id/reviews",reviewRouter);
 app.use("/",userRouter);
+app.use('/chatbot', chatbotRoutes);
 
 app.listen(8080,()=>{
     console.log("server is listening at port 8080");
