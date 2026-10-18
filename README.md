@@ -121,21 +121,3 @@ Contributions are welcome. Suggested workflow:
 
 Please include tests and update the README if you add or change features or configuration.
 
-## License
-
-Add a license to the repository (for example MIT) and update this section. Example:
-
-MIT © [Your Name]
-
-## Contact
-
-For questions or help, open an issue or contact the repository owner.
-
----
-
-If you'd like, I can:
-- Tailor this README using files from the repo (package.json, app entrypoint) to auto-fill scripts, dependencies, and exact run commands.
-- Add a LICENSE file or a CONTRIBUTING.md.
-- Create badges for build, coverage, or dependencies.
-
-Tell me which of the above you'd like me to do next and I will inspect the repo and update the README accordingly.
